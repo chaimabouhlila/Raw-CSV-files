@@ -1,0 +1,188 @@
+@prefix : <https://example.org/sebao#> .
+@prefix brick: <https://brickschema.org/schema/Brick#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix s4bldg: <https://saref.etsi.org/saref4bldg/> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/sebao> a owl:Ontology ;
+    dcterms:creator "Chaima Bouhlila" ;
+    dcterms:description "Lightweight extension of SOSA, Brick and SAREF4BLDG describing HVAC systems, thermal zones, decision rules with set-points, control states, energy observations, forecasts and comfort requirements, to support energy-consumption prediction and optimisation."@en ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:title "SEBAO-HVAC: Semantic ontology for HVAC energy optimisation in buildings"@en ;
+    owl:imports sosa: ;
+    owl:versionInfo "1.0.0" .
+
+:HVACEnergyConsumption a owl:Class ;
+    rdfs:label "HVAC energy consumption"@en ;
+    rdfs:comment "Observable property: electrical energy used by the HVAC system."@en ;
+    rdfs:subClassOf sosa:ObservableProperty .
+
+:HVACEnergyObservation a owl:Class ;
+    rdfs:label "HVAC energy observation"@en ;
+    rdfs:comment "Observation of HVAC electrical energy over one time step, in joules."@en ;
+    rdfs:subClassOf sosa:Observation .
+
+:OutdoorCondition a owl:Class ;
+    rdfs:label "Outdoor condition"@en ;
+    rdfs:comment "Observable property of the outdoor environment (e.g. dry-bulb temperature)."@en ;
+    rdfs:subClassOf sosa:ObservableProperty .
+
+:OutdoorTemperatureObservation a owl:Class ;
+    rdfs:label "Outdoor temperature observation"@en ;
+    rdfs:comment "Observation of the outdoor dry-bulb temperature, in degrees Celsius."@en ;
+    rdfs:subClassOf sosa:Observation .
+
+:ZoneTemperature a owl:Class ;
+    rdfs:label "Zone temperature"@en ;
+    rdfs:comment "Observable property: indoor air temperature of a thermal zone."@en ;
+    rdfs:subClassOf sosa:ObservableProperty .
+
+:ZoneTemperatureObservation a owl:Class ;
+    rdfs:label "Zone temperature observation"@en ;
+    rdfs:comment "Observation of the indoor air temperature of a zone, in degrees Celsius."@en ;
+    rdfs:subClassOf sosa:Observation .
+
+:ZoneTemperatureSensor a owl:Class ;
+    rdfs:label "Zone temperature sensor"@en ;
+    rdfs:comment "Sensor measuring indoor air temperature (degrees Celsius) of a thermal zone."@en ;
+    rdfs:subClassOf sosa:Sensor,
+        brick:Zone_Air_Temperature_Sensor .
+
+:activeRule a owl:FunctionalProperty,
+        owl:ObjectProperty ;
+    rdfs:label "active rule"@en ;
+    rdfs:comment "Decision rule in force at the time step of a control state."@en ;
+    rdfs:domain :ControlState ;
+    rdfs:range :DecisionRule .
+
+:appliesOnWeekendOnly a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "applies on weekend only"@en ;
+    rdfs:comment "True if the rule is active only on Saturday and Sunday."@en ;
+    rdfs:domain :DecisionRule ;
+    rdfs:range xsd:boolean .
+
+:comfortMaxTemperature a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "comfort maximum temperature"@en ;
+    rdfs:comment "Upper bound of the comfort band, in degrees Celsius. [non peuple]"@en ;
+    rdfs:domain :ComfortRequirement ;
+    rdfs:range xsd:float .
+
+:comfortMinTemperature a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "comfort minimum temperature"@en ;
+    rdfs:comment "Lower bound of the comfort band, in degrees Celsius. [non peuple]"@en ;
+    rdfs:domain :ComfortRequirement ;
+    rdfs:range xsd:float .
+
+:coolingSetpoint a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "cooling set-point"@en ;
+    rdfs:comment "Cooling temperature set-point imposed by the rule, in degrees Celsius."@en ;
+    rdfs:domain :DecisionRule ;
+    rdfs:range xsd:float .
+
+:dayOfWeek a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "day of week"@en ;
+    rdfs:comment "Day of the week, 0 (Monday) to 6 (Sunday)."@en ;
+    rdfs:domain :ControlState ;
+    rdfs:range xsd:integer .
+
+:endHour a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "end hour"@en ;
+    rdfs:comment "Hour at which the daily activation window of the rule ends (exclusive)."@en ;
+    rdfs:domain :DecisionRule ;
+    rdfs:range xsd:integer .
+
+:forecastHorizonSteps a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "forecast horizon (steps)"@en ;
+    rdfs:comment "Number of 10-minute steps between the forecast origin and the forecast time. [non peuple]"@en ;
+    rdfs:domain :EnergyForecast ;
+    rdfs:range xsd:integer .
+
+:hasComfortRequirement a owl:ObjectProperty ;
+    rdfs:label "has comfort requirement"@en ;
+    rdfs:comment "Comfort band required in a thermal zone. [non peuple]"@en ;
+    rdfs:domain :ThermalZone ;
+    rdfs:range :ComfortRequirement .
+
+:hasComfortThreshold a owl:DatatypeProperty ;
+    rdfs:label "has comfort threshold"@en ;
+    rdfs:comment "Legacy comfort threshold in degrees Celsius; superseded by comfortMinTemperature and comfortMaxTemperature."@en ;
+    rdfs:range xsd:float ;
+    owl:deprecated true .
+
+:heatingSetpoint a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "heating set-point"@en ;
+    rdfs:comment "Heating temperature set-point imposed by the rule, in degrees Celsius."@en ;
+    rdfs:domain :DecisionRule ;
+    rdfs:range xsd:float .
+
+:hourOfDay a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "hour of day"@en ;
+    rdfs:comment "Hour of the day, 0-23."@en ;
+    rdfs:domain :ControlState ;
+    rdfs:range xsd:integer .
+
+:priority a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "priority"@en ;
+    rdfs:comment "Priority of the rule when several rules apply; higher wins."@en ;
+    rdfs:domain :DecisionRule ;
+    rdfs:range xsd:integer .
+
+:startHour a owl:DatatypeProperty,
+        owl:FunctionalProperty ;
+    rdfs:label "start hour"@en ;
+    rdfs:comment "First hour of the daily activation window of the rule."@en ;
+    rdfs:domain :DecisionRule ;
+    rdfs:range xsd:integer .
+
+:EnergyForecast a owl:Class ;
+    rdfs:label "Energy forecast"@en ;
+    rdfs:comment "Predicted HVAC energy for a future time step, produced by a forecasting model. [non peuple]"@en ;
+    rdfs:subClassOf sosa:Observation .
+
+:HVACEnergyMeter a owl:Class ;
+    rdfs:label "HVAC energy meter"@en ;
+    rdfs:comment "Meter measuring the electrical energy consumed by the HVAC system (joules per time step)."@en ;
+    rdfs:subClassOf sosa:Sensor,
+        brick:Electrical_Meter .
+
+:HVACSystem a owl:Class ;
+    rdfs:label "HVAC system"@en ;
+    rdfs:comment "Heating, ventilation and air-conditioning system of a building; feeds thermal zones."@en ;
+    rdfs:subClassOf brick:HVAC_System .
+
+:ThermalZone a owl:Class ;
+    rdfs:label "Thermal zone"@en ;
+    rdfs:comment "Space conditioned as one unit by the HVAC system (e.g. a perimeter or core zone)."@en ;
+    rdfs:subClassOf brick:HVAC_Zone,
+        s4bldg:BuildingSpace .
+
+:ComfortRequirement a owl:Class ;
+    rdfs:label "Comfort requirement"@en ;
+    rdfs:comment "Admissible indoor temperature band for a thermal zone during occupancy. [non peuple]"@en .
+
+:ControlState a owl:Class ;
+    rdfs:label "Control state"@en ;
+    rdfs:comment "Control context of one time step: the active decision rule, the hour of day and the day of week."@en ;
+    rdfs:subClassOf sosa:Observation .
+
+:DecisionRule a owl:Class ;
+    rdfs:label "Decision rule"@en ;
+    rdfs:comment "Control strategy (e.g. weekend economy, night pre-cooling, peak shaving) that fixes cooling and heating set-points, with a priority and an activation window."@en .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :HVACSystem :ThermalZone :DecisionRule :ControlState :HVACEnergyMeter :ComfortRequirement ) .
+
